@@ -1,2 +1,5 @@
 # build directory
 **/sim_build/**
+
+# pycache
+**/__pycache__/**
