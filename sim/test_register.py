@@ -13,7 +13,7 @@ from cocotb.types import LogicArray
 
 
 @cocotb.test()
-async def dff_simple_test(dut):
+async def register_simple_test(dut):
     """Test that d propagates to q"""
 
     # Set initial input value to prevent it from floating
@@ -39,11 +39,11 @@ async def dff_simple_test(dut):
     assert dut.q.value == expected_val, "output q was incorrect on the last cycle"
 
 
-def test_simple_dff_runner():
+def test_simple_register_runner():
 
     sim = os.getenv("SIM", "icarus")
     proj_path = Path(__file__).resolve().parent
-    verilog_sources = [proj_path / "../src/reg.sv"]
+    verilog_sources = [proj_path / "../src/register.sv"]
 
     runner = get_runner(sim)
     runner.build(
@@ -52,8 +52,8 @@ def test_simple_dff_runner():
         always=True,
     )
 
-    runner.test(hdl_toplevel="register", test_module="test_reg,")
+    runner.test(hdl_toplevel="register", test_module="test_register,")
 
 
 if __name__ == "__main__":
-    test_simple_dff_runner()
+    test_simple_register_runner()
