@@ -1,0 +1,1 @@
+[![Python application](https://github.com/NoName11234/BasicRiscVCore/actions/workflows/python-app.yml/badge.svg?branch=development)](https://github.com/NoName11234/BasicRiscVCore/actions/workflows/python-app.yml)
