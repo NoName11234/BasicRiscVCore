@@ -8,28 +8,29 @@ from pathlib import Path
 import cocotb
 from cocotb.clock import Clock
 from cocotb.runner import get_runner
-from cocotb.triggers import RisingEdge
+from cocotb.triggers import RisingEdge, NextTimeStep, Timer
 from cocotb.types import LogicArray
 
 
 @cocotb.test()
 async def register_simple_test(dut):
-    """Test that d propagates to q"""
+    """Test that loads the register with random data"""
 
     # Set initial input value to prevent it from floating
     dut.d.value = 0
     dut.rst.value = 0
 
-    clock = Clock(dut.clk, 10, units="us")  # Create a 10us period clock on port clk
-    # Start the clock. Start it low to avoid issues on the first RisingEdge
+    clock = Clock(dut.clk, 10, units="ns")  # Create a 10us period clock on port clk
     cocotb.start_soon(clock.start(start_high=False))
 
-    # Synchronize with the clock. This will regisiter the initial `d` value
+    
     await RisingEdge(dut.clk)
     expected_val = 0  # Matches initial input value
+
     for i in range(10):
         val = random.randint(0, 2**int(dut.SIZE.value) - 1)
-        dut.d.value = val  # Assign the random value val to the input port d
+        dut.d.value = val  # set random data
+
         await RisingEdge(dut.clk)
         assert dut.q.value == expected_val, f"output q was incorrect on the {i}th cycle"
         expected_val = val  # Save random value for next RisingEdge
@@ -37,6 +38,32 @@ async def register_simple_test(dut):
     # Check the final input on the next clock
     await RisingEdge(dut.clk)
     assert dut.q.value == expected_val, "output q was incorrect on the last cycle"
+
+@cocotb.test()
+async def register_reset_test(dut):
+    """Test that performs an async reset on the register"""
+
+    # Set initial input value to prevent it from floating
+    dut.d.value = 0
+    dut.rst.value = 0
+
+    clock = Clock(dut.clk, 10, units="ns")  # Create a 10us period clock on port clk
+    cocotb.start_soon(clock.start(start_high=False))
+
+    await RisingEdge(dut.clk)
+
+    val = random.randint(0, 2**int(dut.SIZE.value) - 1)
+    dut.d.value = val  # set random data
+    await RisingEdge(dut.clk)
+    await NextTimeStep()
+    assert dut.q.value == val, f"output q was not set correctly"
+    
+    delay_ns = random.randint(1,9)
+
+    await Timer(delay_ns, "ns")
+    dut.rst.value = 1 # set reset
+    await NextTimeStep()
+    assert dut.q.value == 0, f"output was not reset correctly: got {dut.q.value}, expected 0"
 
 
 def test_simple_register_runner():
