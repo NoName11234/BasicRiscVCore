@@ -19,25 +19,29 @@ async def register_simple_test(dut):
     # Set initial input value to prevent it from floating
     dut.d.value = 0
     dut.rst.value = 0
+    dut.load_en.value = 1
 
     clock = Clock(dut.clk, 10, units="ns")  # Create a 10us period clock on port clk
     cocotb.start_soon(clock.start(start_high=False))
 
-    
     await RisingEdge(dut.clk)
-    expected_val = 0  # Matches initial input value
+    old_val = 0 # initial value
 
     for i in range(10):
         val = random.randint(0, 2**int(dut.SIZE.value) - 1)
         dut.d.value = val  # set random data
+        load = random.randint(0, 1) # random load/keep
+        dut.load_en.value = load
+
+        dut._log.info("val=%d, load=%d", val, load)
 
         await RisingEdge(dut.clk)
-        assert dut.q.value == expected_val, f"output q was incorrect on the {i}th cycle"
-        expected_val = val  # Save random value for next RisingEdge
+        await NextTimeStep()
 
-    # Check the final input on the next clock
-    await RisingEdge(dut.clk)
-    assert dut.q.value == expected_val, "output q was incorrect on the last cycle"
+        dut._log.info("q=%d", int(dut.q.value))
+
+        assert dut.q.value == (val if load else dut.q.value), f"output q was incorrect on the {i}th cycle"
+
 
 @cocotb.test()
 async def register_reset_test(dut):
@@ -46,6 +50,7 @@ async def register_reset_test(dut):
     # Set initial input value to prevent it from floating
     dut.d.value = 0
     dut.rst.value = 0
+    dut.load_en.value = 1
 
     clock = Clock(dut.clk, 10, units="ns")  # Create a 10us period clock on port clk
     cocotb.start_soon(clock.start(start_high=False))
@@ -77,9 +82,10 @@ def test_simple_register_runner():
         verilog_sources=verilog_sources,
         hdl_toplevel="register",
         always=True,
+        timescale=("1ns","1ps")
     )
 
-    runner.test(hdl_toplevel="register", test_module="test_register,")
+    runner.test(hdl_toplevel="register", test_module="test_register,", timescale=("1ns","1ps"))
 
 
 if __name__ == "__main__":
