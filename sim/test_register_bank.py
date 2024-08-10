@@ -36,7 +36,7 @@ async def register_bank_write_test(dut):
         await RisingEdge(dut.clk)
         await NextTimeStep()
 
-        assert dut.r[sel].q.value == data, f"data {data} does not match register {sel}: contains {dut.r[sel].q.value}"
+        assert dut.x[sel].q.value == data, f"data {data} does not match register {sel}: contains {dut.x[sel].q.value}"
 
 
 
@@ -55,8 +55,8 @@ async def register_bank_read_test(dut):
         sel_a = sel[0]
         sel_b = sel[1]
         
-        dut.r[sel_a].q.value = data_a # set data into the registers
-        dut.r[sel_b].q.value = data_b
+        dut.x[sel_a].q.value = data_a # set data into the registers
+        dut.x[sel_b].q.value = data_b
         dut.sel_out_a.value = sel_a
         dut.sel_out_b.value = sel_b
 
@@ -87,16 +87,16 @@ async def register_bank_reset_test(dut):
 
     data = random.choices(range(2**32), k=31)
     for reg in range(1, 32):
-        dut.r[reg].reg_instance.q.value = data[reg - 1]
+        dut.x[reg].reg_instance.q.value = data[reg - 1]
 
     await Timer(1, "ns")
     dut.rst.value = 1
     await Timer(1, "ns")
 
     for reg in range(1, 32):
-        dut._log.info("reset of reg %d is %d", reg, dut.r[reg].reg_instance.rst.value)
-        dut._log.info("q of reg %d is %d", reg, dut.r[reg].reg_instance.q.value)
-        assert dut.r[reg].q.value == 0, f"register {reg} was not reset correctly"
+        dut._log.info("reset of reg %d is %d", reg, dut.x[reg].reg_instance.rst.value)
+        dut._log.info("q of reg %d is %d", reg, dut.x[reg].reg_instance.q.value)
+        assert dut.x[reg].q.value == 0, f"register {reg} was not reset correctly"
 
 
 def test_register_bank_runner():
