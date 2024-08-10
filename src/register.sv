@@ -1,12 +1,14 @@
-`timescale 1ns/1ps
 
 module register # (
   parameter SIZE = 32
 )
 (
-  input [SIZE-1:0] d,
   input clk,
   input rst,
+  input load_en,
+
+  input [SIZE-1:0] d,
+
   output reg [SIZE-1:0] q
 );
   
@@ -14,7 +16,8 @@ module register # (
     if (rst) begin
       q <= 0;
     end else begin
-      q <= d;
+      if (load_en)
+        q <= d;
     end
   end
 
