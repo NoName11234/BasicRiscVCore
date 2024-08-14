@@ -1,3 +1,5 @@
+[![Python application](https://github.com/NoName11234/BasicRiscVCore/actions/workflows/python-app.yml/badge.svg?branch=development)](https://github.com/NoName11234/BasicRiscVCore/actions/workflows/python-app.yml)
+
 # Build instructions
 Follow the tutorial below to build this project.
 Currently only Ubuntu is supported.
@@ -21,21 +23,21 @@ apt install python3 python3-pip virtualenv
 Change your directory to the cloned repository. 
 Run the following command to create a new python environment in the repository.
 > [!NOTE]
-> Note: The created directory is already excluded by the provided gitignore file.
+> The created directory is already excluded by the provided gitignore file.
 ```
 python3 -m venv .venv
 ```
 Activate the created environment by entering the following command.
+> [!NOTE]
+> Activation of the environemt always needs to be done before trying to execute test files of the project.
 ```
 source .venv/bin/activate
 ```
 Install the needed python packages, which are provided in `requirements.txt` via pip.
 ```
-python3 -m pip install requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 Run the provided tests by executing pytest.
 ```
 pytest
 ```
-
-[![Python application](https://github.com/NoName11234/BasicRiscVCore/actions/workflows/python-app.yml/badge.svg?branch=development)](https://github.com/NoName11234/BasicRiscVCore/actions/workflows/python-app.yml)
