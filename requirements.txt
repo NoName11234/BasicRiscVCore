@@ -1,6 +1,5 @@
 cocotb==1.9.0
 cocotb-test==0.2.5
-debugpy==1.8.5
 exceptiongroup==1.2.2
 find_libpython==0.4.0
 iniconfig==2.0.0
