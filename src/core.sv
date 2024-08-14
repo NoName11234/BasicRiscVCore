@@ -1,6 +1,6 @@
 
 
-module core (
+module core import defines::*;(
     input clk,
     input rst
 );
@@ -20,6 +20,13 @@ module core (
     wire [4:0] reg_bank_sel_out_b;
 
 
+    // alu connections
+    wire [31:0] alu_immediate_data;
+    alu_operand_t alu_operand_a_select;
+    alu_operand_t alu_operand_b_select;
+    alu_operation_t alu_operation;
+    wire [31:0] alu_result;
+
     register_bank reg_bank (
         .clk(clk),
         .rst(rst),
@@ -38,6 +45,17 @@ module core (
         .load_en(pc_load_en),
         .d(data_bus),
         .q(pc_data_out)
+    );
+
+    alu alu_inst (
+        .rs1(reg_bank_data_out_a),
+        .rs2(reg_bank_data_out_b),
+        .imm(alu_immediate_data),
+        .pc(pc_data_out),
+        .operand_a_select(alu_operand_a_select),
+        .operand_b_select(alu_operand_b_select),
+        .operation(alu_operation),
+        .result(alu_result)
     );
 
 
