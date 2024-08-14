@@ -8,8 +8,10 @@ from pathlib import Path
 import cocotb
 from cocotb.clock import Clock
 from cocotb.runner import get_runner
-from cocotb.triggers import RisingEdge, NextTimeStep, Timer
+from cocotb.triggers import RisingEdge, NextTimeStep, Timer, ReadOnly
 from cocotb.types import LogicArray
+
+import debugpy
 
 
 @cocotb.test()
@@ -25,9 +27,11 @@ async def register_simple_test(dut):
     cocotb.start_soon(clock.start(start_high=False))
 
     await RisingEdge(dut.clk)
-    old_val = 0 # initial value
+    await ReadOnly() # wait for updated values
 
     for i in range(10):
+        await NextTimeStep() # wait for the next timestep
+
         val = random.randint(0, 2**int(dut.SIZE.value) - 1)
         dut.d.value = val  # set random data
         load = random.randint(0, 1) # random load/keep
@@ -35,12 +39,14 @@ async def register_simple_test(dut):
 
         dut._log.info("val=%d, load=%d", val, load)
 
+        old_val = dut.q.value
+
         await RisingEdge(dut.clk)
-        await NextTimeStep()
+        await ReadOnly()
 
         dut._log.info("q=%d", int(dut.q.value))
 
-        assert dut.q.value == (val if load else dut.q.value), f"output q was incorrect on the {i}th cycle"
+        assert dut.q.value == (val if load else old_val), f"output q was incorrect on the {i}th cycle"
 
 
 @cocotb.test()
