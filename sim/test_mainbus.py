@@ -13,12 +13,10 @@ async def mainbus_test_alu_input(dut):
 
     dut.alu.value = 1
     dut.register_bank.value = 0
-    dut.decoder.value = 0
     dut.memory.value = 0
 
     dut.alu_in.value = 5
     dut.register_bank_in.value = 10
-    dut.decoder_in.value = 15
     dut.memory_in.value = 20
 
     await Timer(1,"ns")
@@ -32,36 +30,15 @@ async def mainbus_test_register_bank_input(dut):
     """
     dut.alu.value = 0
     dut.register_bank.value = 1
-    dut.decoder.value = 0
     dut.memory.value = 0
 
     dut.alu_in.value = 5
     dut.register_bank_in.value = 10
-    dut.decoder_in.value = 15
     dut.memory_in.value = 20
 
     await Timer(1,"ns")
 
     assert dut.data_out.value == 10, f"register_bank_in is not passed through to data_out"
-
-@cocotb.test()
-async def mainbus_test_decoder_input(dut):
-    """
-    Tests whether input from decoder is passed through
-    """
-    dut.alu.value = 0
-    dut.register_bank.value = 0
-    dut.decoder.value = 1
-    dut.memory.value = 0
-
-    dut.alu_in.value = 5
-    dut.register_bank_in.value = 10
-    dut.decoder_in.value = 15
-    dut.memory_in.value = 20
-
-    await Timer(1,"ns")
-
-    assert dut.data_out.value == 15, f"decoder_in is not passed through to data_out"
 
 @cocotb.test()
 async def mainbus_test_memory_input(dut):
@@ -70,12 +47,10 @@ async def mainbus_test_memory_input(dut):
     """
     dut.alu.value = 0
     dut.register_bank.value = 0
-    dut.decoder.value = 0
     dut.memory.value = 1
 
     dut.alu_in.value = 5
     dut.register_bank_in.value = 10
-    dut.decoder_in.value = 15
     dut.memory_in.value = 20
 
     await Timer(1,"ns")
@@ -89,12 +64,10 @@ async def mainbus_test_no_input(dut):
     """
     dut.alu.value = 0
     dut.register_bank.value = 0
-    dut.decoder.value = 0
     dut.memory.value = 0
 
     dut.alu_in.value = 5
     dut.register_bank_in.value = 10
-    dut.decoder_in.value = 15
     dut.memory_in.value = 20
 
     await Timer(1,"ns")
