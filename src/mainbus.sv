@@ -26,8 +26,10 @@ module mainbus (
             data_out = register_bank_in;
         end else if(decoder) begin
             data_out = decoder_in;
-        end else begin
+        end else if(memory) begin
             data_out = memory_in;
+        end else begin
+            data_out = 0;
         end
     end
 
