@@ -9,3 +9,6 @@
 
 # vscode
 .vscode
+
+# fusesoc
+fusesoc_libraries
