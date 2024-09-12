@@ -10,12 +10,7 @@ module mainbus (
     output reg [31:0] data_out
 );
 
-    always @(alu,
-    register_bank,
-    memory,
-    alu_in,
-    register_bank_in,
-    memory_in) begin
+    always @(*) begin
         if(alu) begin
             data_out = alu_in;
         end else if(register_bank) begin
