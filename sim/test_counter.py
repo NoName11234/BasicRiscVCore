@@ -18,7 +18,7 @@ async def counter_preload_test(dut):
     """Tests counter preload"""
 
     # Set initial input value to prevent it from floating
-    dut.d.value = 130
+    dut.preset_value.value = 130
     dut.rst.value = 0
     dut.load_en.value = 1
 
@@ -28,7 +28,7 @@ async def counter_preload_test(dut):
     await RisingEdge(dut.clk)
     await ReadOnly() # wait for updated values
 
-    assert dut.q.value == 130, "preset failed"
+    assert dut.counter_value.value == 130, "preset failed"
 
 
 @cocotb.test()
@@ -36,7 +36,7 @@ async def counter_increment_test(dut):
     """
     Tests the counter increment
     """
-    dut.d.value = 0
+    dut.preset_value.value = 0
     dut.rst.value = 0
     dut.load_en.value = 1
     dut.count_en.value = 0
@@ -53,7 +53,7 @@ async def counter_increment_test(dut):
     await RisingEdge(dut.clk)
     await ReadOnly()
 
-    assert dut.q.value == 1, "increment failed. Expected 1"
+    assert dut.counter_value.value == 1, "increment failed. Expected 1"
 
 
 @cocotb.test()
@@ -61,7 +61,7 @@ async def counter_reset_test(dut):
     """Test that performs an async reset on the register"""
 
     # Set initial input value to prevent it from floating
-    dut.d.value = 0
+    dut.preset_value.value = 0
     dut.rst.value = 0
     dut.load_en.value = 1
 
@@ -71,24 +71,25 @@ async def counter_reset_test(dut):
     await RisingEdge(dut.clk)
 
     val = random.randint(0, 2**int(dut.SIZE.value) - 1)
-    dut.d.value = val  # set random data
+    dut.preset_value.value = val  # set random data
     await RisingEdge(dut.clk)
     await NextTimeStep()
-    assert dut.q.value == val, f"output q was not set correctly"
+    assert dut.counter_value.value == val, f"output q was not set correctly"
     
     delay_ns = random.randint(1,9)
 
     await Timer(delay_ns, "ns")
     dut.rst.value = 1 # set reset
     await NextTimeStep()
-    assert dut.q.value == 0, f"output was not reset correctly: got {dut.q.value}, expected 0"
+    assert dut.counter_value.value == 0, f"output was not reset correctly: got {dut.counter_value.value}, expected 0"
 
 
 def test_simple_counter_runner():
 
     sim = os.getenv("SIM", "icarus")
-    proj_path = Path(__file__).resolve().parent
-    verilog_sources = [proj_path / "../src/counter.sv"]
+    proj_path = Path(__file__).resolve().parent.parent
+    src_path = proj_path / "src"
+    verilog_sources = [src_path / "../src/counter.sv"]
 
     runner = get_runner(sim)
     runner.build(
